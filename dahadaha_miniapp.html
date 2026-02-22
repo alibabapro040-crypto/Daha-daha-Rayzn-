@@ -284,6 +284,66 @@
       font-weight: 500;
     }
 
+    /* İFRAME GÖRÜNÜMÜ */
+
+    .viewer {
+      display: none;
+      flex-direction: column;
+      height: calc(100vh - 32px);
+      max-width: 480px;
+      margin: 0 auto;
+    }
+
+    .viewer.active {
+      display: flex;
+    }
+
+    .viewer-header {
+      display: flex;
+      align-items: center;
+      padding: 8px 10px;
+      background: rgba(5,10,24,0.95);
+      border-radius: 14px 14px 0 0;
+      border: 1px solid rgba(255,255,255,0.08);
+      border-bottom: none;
+    }
+
+    .viewer-back {
+      border: none;
+      background: rgba(255,255,255,0.06);
+      color: #fff;
+      border-radius: 999px;
+      padding: 5px 10px;
+      font-size: 12px;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      cursor: pointer;
+      margin-right: 8px;
+    }
+
+    .viewer-title {
+      font-size: 12px;
+      color: var(--muted);
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+    }
+
+    .viewer-frame-wrap {
+      flex: 1;
+      border-radius: 0 0 14px 14px;
+      overflow: hidden;
+      border: 1px solid rgba(255,255,255,0.08);
+      background: #000;
+    }
+
+    .viewer-frame {
+      width: 100%;
+      height: 100%;
+      border: none;
+    }
+
     @keyframes fadeIn {
       from { opacity: 0; transform: translateY(4px); }
       to { opacity: 1; transform: translateY(0); }
@@ -292,7 +352,8 @@
 </head>
 <body>
   <div class="app">
-    <div class="card">
+    <!-- ANA PANEL -->
+    <div class="card" id="panel">
       <div class="header">
         <div class="logo-circle">Dd</div>
         <div class="title-wrap">
@@ -300,20 +361,14 @@
             <span>DahaDaha</span>
             <small>Mini Panel</small>
           </div>
-          <div class="subtitle">Kod gir, puan linkleri ve kısayollar tek yerde.</div>
+          <div class="subtitle">Kod gir, hediyeler ve ayarlara tek yerden git.</div>
         </div>
       </div>
 
       <div class="pill-row">
-        <div class="pill">
-          🔐 <strong>Giriş</strong> &amp; güvenli
-        </div>
-        <div class="pill">
-          🧾 <strong>Kod</strong> geçmişi
-        </div>
-        <div class="pill">
-          🎁 <strong>Hediye</strong> kısayolu
-        </div>
+        <div class="pill">🔐 <strong>Giriş</strong> &amp; güvenli</div>
+        <div class="pill">🧾 <strong>Kod</strong> geçmişi</div>
+        <div class="pill">🎁 <strong>Hediye</strong> kısayolu</div>
       </div>
 
       <div class="tabs">
@@ -347,14 +402,13 @@
       <div class="section active" id="section-login">
         <div class="section-title">Giriş</div>
         <div class="section-desc">
-          DahaDaha hesabına telefon numaran ve SMS doğrulaması ile giriş yapmak için
-          resmi sayfayı açacağım. Tüm işlemler orada, bu panel ise sadece kısayol ve
-          kod/hesap notları içindir.
+          DahaDaha hesabına telefon numaran ve SMS doğrulaması ile giriş yapman için
+          resmi sayfayı bu panelin içinde açacağım. Yukarıdaki geri tuşu ile tekrar buraya dönebilirsin.
         </div>
-        <button class="btn-primary" onclick="openExternal(URLS.login)">
+        <button class="btn-primary" onclick="openInside('https://www.dahadaha.com/web/login', 'Giriş')">
           🔐 Giriş sayfasını aç
         </button>
-        <button class="btn-secondary" onclick="openExternal(URLS.home)">
+        <button class="btn-secondary" onclick="openInside('https://www.dahadaha.com/web', 'Ana sayfa')">
           🏠 Ana sayfayı aç
         </button>
       </div>
@@ -364,17 +418,17 @@
         <div class="section-title">Kod gir</div>
         <div class="section-desc">
           Buraya girdiğin kodlar sadece bu mini uygulamada, cihazında saklanır.
-          Daha sonra resmi kod gir ekranını tek tıkla açabilirsin.
+          Daha sonra resmi kod gir ekranını aynı pencerede açabilirsin.
         </div>
 
         <div class="field">
           <label for="code-input">Kodunu yaz (ör. ABCD1234):</label>
           <input id="code-input" class="input" placeholder="Kodu buraya yaz" maxlength="80">
         </div>
-        <button class="btn-primary" onclick="saveCode()">
+        <button class="btn-primary" onclick="saveCodeAndOpen()">
           💾 Kodu kaydet &amp; kod gir ekranını aç
         </button>
-        <button class="btn-secondary" onclick="openExternal(URLS.code)">
+        <button class="btn-secondary" onclick="openInside('https://www.dahadaha.com/web/code-enter', 'Kod gir')">
           🧾 Sadece kod gir ekranını aç
         </button>
       </div>
@@ -385,10 +439,10 @@
         <div class="section-desc">
           Puanlarını görmek ve hediyeleri incelemek için resmi hediye listesi sayfasını aç.
         </div>
-        <button class="btn-primary" onclick="openExternal(URLS.prizes)">
+        <button class="btn-primary" onclick="openInside('https://www.dahadaha.com/web/prize-list/loyalty-q1-promo-2026/223', 'Hediyeler')">
           🎁 Hediyeler sayfasını aç
         </button>
-        <button class="btn-secondary" onclick="openExternal(URLS.home)">
+        <button class="btn-secondary" onclick="openInside('https://www.dahadaha.com/web', 'Ana sayfa')">
           🏠 Ana sayfayı aç
         </button>
       </div>
@@ -399,7 +453,7 @@
         <div class="section-desc">
           İletişim tercihleri, profil bilgileri ve diğer ayarlar için resmi hesap ayarları sayfasını aç.
         </div>
-        <button class="btn-primary" onclick="openExternal(URLS.settings)">
+        <button class="btn-primary" onclick="openInside('https://www.dahadaha.com/web/settings', 'Ayarlar')">
           ⚙️ Hesap ayarları sayfasını aç
         </button>
       </div>
@@ -408,10 +462,10 @@
       <div class="section" id="section-close">
         <div class="section-title">Hesabım &amp; veri talepleri</div>
         <div class="section-desc">
-          Hesap kapatma veya kişisel veri talepleri için Coca-Cola'nın resmi DSR sayfasına
-          gideceksin. Tüm işlemler orada, resmi olarak yapılır.
+          Hesap kapatma veya kişisel veri talepleri için Coca-Cola'nın resmi DSR sayfasını
+          açacağım. Tüm işlemler orada yapılır.
         </div>
-        <button class="btn-primary" onclick="openExternal(URLS.close)">
+        <button class="btn-primary" onclick="openInside('https://www.coca-cola.com/tr/tr/legal/dsr', 'Hesabımı kapat / DSR')">
           🛑 Hesabımı kapatma / veri talebi
         </button>
       </div>
@@ -434,6 +488,19 @@
         resmi DahaDaha / Coca-Cola sayfalarında gerçekleşir.
       </div>
     </div>
+
+    <!-- İÇERİDE SİTE GÖSTEREN İFRAME GÖRÜNÜMÜ -->
+    <div class="viewer" id="viewer">
+      <div class="viewer-header">
+        <button class="viewer-back" onclick="closeViewer()">
+          ← Geri
+        </button>
+        <div class="viewer-title" id="viewer-title">Site</div>
+      </div>
+      <div class="viewer-frame-wrap">
+        <iframe id="viewer-frame" class="viewer-frame" src=""></iframe>
+      </div>
+    </div>
   </div>
 
   <script>
@@ -442,24 +509,6 @@
       tg.expand();
       tg.setBackgroundColor("#050816");
       tg.setHeaderColor("secondary_bg_color");
-    }
-
-    const URLS = {
-      login: "https://www.dahadaha.com/web/login",
-      home: "https://www.dahadaha.com/web",
-      code: "https://www.dahadaha.com/web/code-enter",
-      prizes: "https://www.dahadaha.com/web/prize-list/loyalty-q1-promo-2026/223",
-      settings: "https://www.dahadaha.com/web/settings",
-      close: "https://www.coca-cola.com/tr/tr/legal/dsr"
-    };
-
-    function openExternal(url) {
-      // Telegram içi mini app kapanmadan harici tarayıcıda / webview'de aç
-      if (tg && tg.openLink) {
-        tg.openLink(url);
-      } else {
-        window.open(url, "_blank");
-      }
     }
 
     // TAB LOGIC
@@ -487,6 +536,26 @@
       });
     });
 
+    // PANEL / VIEWER GEÇİŞİ
+
+    const panel = document.getElementById("panel");
+    const viewer = document.getElementById("viewer");
+    const viewerFrame = document.getElementById("viewer-frame");
+    const viewerTitle = document.getElementById("viewer-title");
+
+    function openInside(url, title) {
+      viewerFrame.src = url;
+      viewerTitle.textContent = title || "Site";
+      panel.style.display = "none";
+      viewer.classList.add("active");
+    }
+
+    function closeViewer() {
+      viewerFrame.src = "about:blank";
+      viewer.classList.remove("active");
+      panel.style.display = "block";
+    }
+
     // CODE HISTORY (localStorage)
     const HISTORY_KEY = "dahadaha_code_history_v1";
 
@@ -510,7 +579,7 @@
       }
     }
 
-    function saveCode() {
+    function saveCodeAndOpen() {
       const input = document.getElementById("code-input");
       let code = (input.value || "").trim();
       if (!code) {
@@ -534,7 +603,7 @@
       }
 
       input.value = "";
-      openExternal(URLS.code);
+      openInside("https://www.dahadaha.com/web/code-enter", "Kod gir");
     }
 
     function renderHistory() {
