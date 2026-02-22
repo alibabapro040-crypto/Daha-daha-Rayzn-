@@ -300,7 +300,7 @@
             <span>DahaDaha</span>
             <small>Mini Panel</small>
           </div>
-          <div class="subtitle">Kod gir, puanlarını ve linklerini tek yerden yönet.</div>
+          <div class="subtitle">Kod gir, puan linkleri ve kısayollar tek yerde.</div>
         </div>
       </div>
 
@@ -309,10 +309,10 @@
           🔐 <strong>Giriş</strong> &amp; güvenli
         </div>
         <div class="pill">
-          🧾 <strong>Kod</strong> yönetimi
+          🧾 <strong>Kod</strong> geçmişi
         </div>
         <div class="pill">
-          🎁 <strong>Hediyeler</strong> &amp; puan
+          🎁 <strong>Hediye</strong> kısayolu
         </div>
       </div>
 
@@ -347,13 +347,14 @@
       <div class="section active" id="section-login">
         <div class="section-title">Giriş</div>
         <div class="section-desc">
-          DahaDaha hesabına telefon numaran ve SMS doğrulaması ile giriş yapman için
-          resmi sayfaya yönlendireceğim. İşlemin tamamı Coca-Cola altyapısında gerçekleşir.
+          DahaDaha hesabına telefon numaran ve SMS doğrulaması ile giriş yapmak için
+          resmi sayfayı açacağım. Tüm işlemler orada, bu panel ise sadece kısayol ve
+          kod/hesap notları içindir.
         </div>
-        <button class="btn-primary" onclick="openUrl('https://www.dahadaha.com/web/login')">
+        <button class="btn-primary" onclick="openExternal(URLS.login)">
           🔐 Giriş sayfasını aç
         </button>
-        <button class="btn-secondary" onclick="openUrl('https://www.dahadaha.com/web')">
+        <button class="btn-secondary" onclick="openExternal(URLS.home)">
           🏠 Ana sayfayı aç
         </button>
       </div>
@@ -363,7 +364,7 @@
         <div class="section-title">Kod gir</div>
         <div class="section-desc">
           Buraya girdiğin kodlar sadece bu mini uygulamada, cihazında saklanır.
-          Daha sonra resmi kod gir ekranına tek tıkla geçip kodu yapıştırabilirsin.
+          Daha sonra resmi kod gir ekranını tek tıkla açabilirsin.
         </div>
 
         <div class="field">
@@ -373,7 +374,7 @@
         <button class="btn-primary" onclick="saveCode()">
           💾 Kodu kaydet &amp; kod gir ekranını aç
         </button>
-        <button class="btn-secondary" onclick="openUrl('https://www.dahadaha.com/web/code-enter')">
+        <button class="btn-secondary" onclick="openExternal(URLS.code)">
           🧾 Sadece kod gir ekranını aç
         </button>
       </div>
@@ -384,10 +385,10 @@
         <div class="section-desc">
           Puanlarını görmek ve hediyeleri incelemek için resmi hediye listesi sayfasını aç.
         </div>
-        <button class="btn-primary" onclick="openUrl('https://www.dahadaha.com/web/prize-list/loyalty-q1-promo-2026/223')">
+        <button class="btn-primary" onclick="openExternal(URLS.prizes)">
           🎁 Hediyeler sayfasını aç
         </button>
-        <button class="btn-secondary" onclick="openUrl('https://www.dahadaha.com/web')">
+        <button class="btn-secondary" onclick="openExternal(URLS.home)">
           🏠 Ana sayfayı aç
         </button>
       </div>
@@ -398,7 +399,7 @@
         <div class="section-desc">
           İletişim tercihleri, profil bilgileri ve diğer ayarlar için resmi hesap ayarları sayfasını aç.
         </div>
-        <button class="btn-primary" onclick="openUrl('https://www.dahadaha.com/web/settings')">
+        <button class="btn-primary" onclick="openExternal(URLS.settings)">
           ⚙️ Hesap ayarları sayfasını aç
         </button>
       </div>
@@ -410,7 +411,7 @@
           Hesap kapatma veya kişisel veri talepleri için Coca-Cola'nın resmi DSR sayfasına
           gideceksin. Tüm işlemler orada, resmi olarak yapılır.
         </div>
-        <button class="btn-primary" onclick="openUrl('https://www.coca-cola.com/tr/tr/legal/dsr')">
+        <button class="btn-primary" onclick="openExternal(URLS.close)">
           🛑 Hesabımı kapatma / veri talebi
         </button>
       </div>
@@ -452,9 +453,13 @@
       close: "https://www.coca-cola.com/tr/tr/legal/dsr"
     };
 
-    function openUrl(url) {
-      // Mini app içinde sayfa yönlendirmesi: telegram webview kendi içinde açar.
-      window.location.href = url;
+    function openExternal(url) {
+      // Telegram içi mini app kapanmadan harici tarayıcıda / webview'de aç
+      if (tg && tg.openLink) {
+        tg.openLink(url);
+      } else {
+        window.open(url, "_blank");
+      }
     }
 
     // TAB LOGIC
@@ -471,14 +476,11 @@
     tabButtons.forEach(btn => {
       btn.addEventListener("click", () => {
         const tab = btn.dataset.tab;
-        // active tab button
         tabButtons.forEach(b => b.classList.remove("active"));
         btn.classList.add("active");
-        // active section
         Object.keys(sections).forEach(k => {
           sections[k].classList.toggle("active", k === tab);
         });
-
         if (tab === "history") {
           renderHistory();
         }
@@ -519,8 +521,6 @@
         alert("Kod çok uzun görünüyor.");
         return;
       }
-
-      // normalize spaces
       code = code.replace(/\s+/g, "");
 
       let list = getHistory();
@@ -529,14 +529,12 @@
           code,
           ts: Date.now()
         });
-        // en fazla 50 kayıt
         list = list.slice(0, 50);
         setHistory(list);
       }
 
       input.value = "";
-      // kod gir ekranına geç
-      openUrl(URLS.code);
+      openExternal(URLS.code);
     }
 
     function renderHistory() {
@@ -574,4 +572,4 @@
     }
   </script>
 </body>
-          </html>
+  </html>
